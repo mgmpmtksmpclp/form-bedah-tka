@@ -40,7 +40,7 @@ B. FORM (index.html) — lewat GitHub + VPS
    ter-deploy (12 Nov 2026). Bila Web App di-deploy ulang dan URL-nya
    berubah, ubah baris WEBAPP_URL di index.html lalu bangun ulang
    lewat build_index.py.
-7. Repo GitHub: wartam-mjng/form-tka (publik). Di VPS, clone ke
+7. Repo GitHub: mgmpmtksmpclp/form-tka (publik, akun MGMP). Di VPS, clone ke
    /home/ubuntu/form-tka, lalu Caddy menyajikannya di
    https://tka.mgmpmtkcilacap.web.id (perlu record A: tka ->
    43.156.129.225 di DNS mgmpmtkcilacap.web.id).
