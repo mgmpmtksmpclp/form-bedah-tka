@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Pendaftaran Bedah TKA 2026/2027</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: "Times New Roman", Times, serif; background: #fff8e1; margin: 0; padding: 18px 14px; color: #1f2937; }
+.kartu { max-width: 620px; margin: 0 auto; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,118,110,.18); }
+.kepala { background: linear-gradient(90deg,#075985,#0369a1 50%,#0ea5e9); padding: 24px 24px 18px; color: #fff; }
+.kepala-isi { display: flex; align-items: flex-start; gap: 10px; }
+.kepala-ikon { font-size: 26px; line-height: 1.25; }
+.kepala h1 { margin: 0; font-size: 26px; }
+.kepala p { margin: 6px 0 0; font-size: 15px; opacity: .95; }
+.isi { padding: 8px 24px 22px; }
+label { display: block; font-size: 14px; font-weight: bold; color: #0f766e; margin: 18px 0 6px; }
+label .wajib { color: #dc2626; }
+input, select { width: 100%; padding: 12px 14px; border: 1.5px solid #d1d5db; border-radius: 10px; font-size: 15px; font-family: inherit; background: #fff; color: #1f2937; }
+input:focus { outline: none; border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,.15); }
+input[readonly] { background: #f3f4f6; color: #374151; }
+input.galat { border-color: #dc2626; }
+.hint { font-size: 13px; color: #6b7280; margin: 5px 0 0; }
+.hint.galat { color: #dc2626; font-weight: bold; }
+.hint.ok { color: #15803d; font-weight: bold; }
+button.kirim { background: linear-gradient(180deg,#f97316,#ea580c); color: #fff; border: 0; border-radius: 12px; padding: 14px 20px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 24px; width: 100%; box-shadow: 0 4px 14px rgba(234,88,12,.35); font-family: inherit; }
+button.kirim:disabled { opacity: .55; box-shadow: none; cursor: wait; }
+button.templat { background: #fff; color: #0f766e; border: 1.5px solid #0f766e; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; font-family: inherit; }
+button.templat:hover { background: #f0fdfa; }
+.pesan { margin-top: 16px; font-size: 14px; padding: 13px 15px; border-radius: 10px; display: none; line-height: 1.5; }
+.pesan.ok { background: #dcfce7; border: 1px solid #86efac; display: block; }
+.pesan.galat { background: #fee2e2; border: 1px solid #fca5a5; display: block; }
+.fileinfo { font-size: 13px; color: #15803d; margin: 6px 0 0; font-weight: bold; }
+.bagian { border-top: 2px solid #fde68a; margin-top: 22px; padding-top: 4px; }
+.bagian h2 { font-size: 17px; color: #b45309; margin: 14px 0 0; }
+.kaki { font-size: 12px; color: #9ca3af; text-align: center; margin: 18px 0 0; }
+</style>
+</head>
+<body>
+<div class="kartu">
+  <div class="kepala">
+    <div class="kepala-isi">
+      <span class="kepala-ikon">📋</span>
+      <div>
+        <h1>Form Pendaftaran Bedah TKA 2026/2027</h1>
+        <p>Panitia Bedah TKA TP 2026/2027 Kabupaten Cilacap</p>
+      </div>
+    </div>
+  </div>
+  <div class="isi">
+    <form id="formTKA" novalidate>
+      <div class="bagian"><h2>🏫 Data Sekolah</h2></div>
+
+      <label for="npsn">NPSN <span class="wajib">*</span></label>
+      <input id="npsn" inputmode="numeric" autocomplete="off" maxlength="8"
+             placeholder="Contoh: 20331749">
+      <p class="hint" id="npsnHint">Ketik 8 digit NPSN &mdash; nama sekolah dan Komda akan muncul otomatis.</p>
+
+      <label for="sekolah">Nama Sekolah</label>
+      <input id="sekolah" readonly placeholder="— terisi otomatis dari NPSN —">
+
+      <label for="kecamatan">Kecamatan</label>
+      <input id="kecamatan" readonly placeholder="— terisi otomatis dari NPSN —">
+
+      <label for="komda">Komda</label>
+      <input id="komda" readonly placeholder="— terisi otomatis dari NPSN —">
+
+      <div class="bagian"><h2>👥 Data Peserta</h2></div>
+
+      <label for="guruBindo">Nama Guru Bahasa Indonesia <span class="wajib">*</span></label>
+      <input id="guruBindo" autocomplete="off" placeholder="Contoh: Siti Aminah, S.Pd.">
+
+      <label for="nipBindo">NIP Guru Bahasa Indonesia <span class="wajib">*</span></label>
+      <input id="nipBindo" inputmode="numeric" autocomplete="off" maxlength="18"
+             placeholder="Contoh: 198506122009032001 (18 digit)">
+
+      <label for="guruMat">Nama Guru Mata Pelajaran Matematika <span class="wajib">*</span></label>
+      <input id="guruMat" autocomplete="off" placeholder="Contoh: Budi Santoso, S.Pd.">
+
+      <label for="nipMat">NIP Guru Mata Pelajaran Matematika <span class="wajib">*</span></label>
+      <input id="nipMat" inputmode="numeric" autocomplete="off" maxlength="18"
+             placeholder="Contoh: 198803152010011002 (18 digit)">
+
+      <div class="bagian"><h2>🧑‍🎓 Data Murid Kelas 9</h2></div>
+
+      <label>Upload Data Murid Kelas 9 <span class="wajib">*</span></label>
+      <button type="button" class="templat" id="btnTemplat">⬇ Unduh Template Data Murid (CSV)</button>
+      <p class="hint">Unduh templatenya, isi data, lalu unggah kembali file-nya di bawah ini.</p>
+      <input id="fileMurid" type="file" accept=".csv,.xls,.xlsx" style="margin-top:10px">
+      <p class="hint">Format file: CSV atau Excel (.xls / .xlsx).</p>
+      <p class="fileinfo" id="fileInfo" style="display:none"></p>
+
+      <button type="submit" class="kirim" id="btnKirim">Kirim Pendaftaran</button>
+      <p class="kaki">Satu pendaftaran per sekolah (satu NPSN). Bila sudah terdaftar, hubungi panitia untuk perubahan data.</p>
+    </form>
+    <div class="pesan" id="pesan"></div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// KONFIGURASI — GANTI SETELAH DEPLOY APPS SCRIPT:
+// Tempel URL Web App (diakhiri /exec) dari Deploy > New deployment.
+// =====================================================================
+var WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzxkADr1Zu5okSyLcuKqhd7OlYS1PO6s_yoYQpxyChmUc9iS3G4iMK8Do4AS96jVvaq/exec";
+
+// Data sekolah (195 SMP Kab. Cilacap): [NPSN, Nama, Kecamatan, Komda]
+var DATA_SEKOLAH = [["20300558","SMP NEGERI 1 ADIPALA","Adipala","Maos"],["20300557","SMP NEGERI 1 BANTARSARI","Bantarsari","Gandrungmangu"],["20300556","SMP NEGERI 1 BINANGUN","Binangun","Kroya"],["20300574","SMP NEGERI 1 CILACAP","Cilacap Selatan","Kotip"],["20300575","SMP NEGERI 1 CIMANGGU","Cimanggu","Majenang"],["20300576","SMP NEGERI 1 CIPARI","Cipari","Sidareja"],["20300593","SMP NEGERI 1 DAYEUHLUHUR","Dayeuhluhur","Majenang"],["20300592","SMP NEGERI 1 GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300591","SMP NEGERI 1 JERUKLEGI","Jeruklegi","Jeruklegi"],["20338488","SMP NEGERI 1 KAMPUNG LAUT","Kampung Laut","Sidareja"],["20300590","SMP NEGERI 1 KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300589","SMP NEGERI 1 KAWUNGANTEN","Kawunganten","Jeruklegi"],["20300588","SMP NEGERI 1 KEDUNGREJA","Kedungreja","Sidareja"],["20300587","SMP NEGERI 1 KESUGIHAN","Kesugihan","Jeruklegi"],["20300586","SMP NEGERI 1 KROYA","Kroya","Kroya"],["20300585","SMP NEGERI 1 MAJENANG","Majenang","Majenang"],["20300584","SMP NEGERI 1 MAOS","Maos","Maos"],["20300583","SMP NEGERI 1 NUSAWUNGU","Nusawungu","Kroya"],["20300582","SMP NEGERI 1 PATIMUAN","Patimuan","Sidareja"],["20300581","SMP NEGERI 1 SAMPANG","Sampang","Maos"],["20300579","SMP NEGERI 1 SIDAREJA","Sidareja","Sidareja"],["20300514","SMP NEGERI 1 WANAREJA","Wanareja","Majenang"],["20300577","SMP NEGERI 2 ADIPALA","Adipala","Maos"],["20331746","SMP NEGERI 2 BANTARSARI","Bantarsari","Gandrungmangu"],["20300554","SMP NEGERI 2 BINANGUN","Binangun","Kroya"],["20300553","SMP NEGERI 2 CILACAP","Cilacap Tengah","Kotip"],["20300552","SMP NEGERI 2 CIMANGGU","Cimanggu","Majenang"],["20300531","SMP NEGERI 2 CIPARI","Cipari","Sidareja"],["20300530","SMP NEGERI 2 DAYEUHLUHUR","Dayeuhluhur","Majenang"],["20300529","SMP NEGERI 2 GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300528","SMP NEGERI 2 JERUKLEGI","Jeruklegi","Jeruklegi"],["20338712","SMP NEGERI 2 KAMPUNG LAUT","Kampung Laut","Kotip"],["20300527","SMP NEGERI 2 KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300526","SMP NEGERI 2 KAWUNGANTEN","Kawunganten","Jeruklegi"],["20300525","SMP NEGERI 2 KEDUNGREJA","Kedungreja","Sidareja"],["20300524","SMP NEGERI 2 KESUGIHAN","Kesugihan","Jeruklegi"],["20300523","SMP NEGERI 2 KROYA","Kroya","Kroya"],["20300522","SMP NEGERI 2 MAJENANG","Majenang","Majenang"],["20300521","SMP NEGERI 2 MAOS","Maos","Maos"],["20300520","SMP NEGERI 2 NUSAWUNGU","Nusawungu","Kroya"],["20341201","SMP NEGERI 2 PATIMUAN","Patimuan","Sidareja"],["20300519","SMP NEGERI 2 SAMPANG","Sampang","Maos"],["20341250","SMP NEGERI 2 SATU ATAP PATIMUAN","Patimuan","Sidareja"],["20300518","SMP NEGERI 2 SIDAREJA","Sidareja","Sidareja"],["20300517","SMP NEGERI 2 WANAREJA","Wanareja","Majenang"],["20343761","SMP NEGERI 3 BANTARSARI","Bantarsari","Gandrungmangu"],["20339247","SMP NEGERI 3 BINANGUN","Binangun","Kroya"],["20300516","SMP NEGERI 3 CILACAP","Cilacap Selatan","Kotip"],["20300515","SMP NEGERI 3 GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20338934","SMP NEGERI 3 JERUKLEGI","Jeruklegi","Jeruklegi"],["20300532","SMP NEGERI 3 KAWUNGANTEN","Kawunganten","Jeruklegi"],["20331747","SMP NEGERI 3 KEDUNGREJA","Kedungreja","Sidareja"],["20300533","SMP NEGERI 3 KESUGIHAN","Kesugihan","Jeruklegi"],["20300534","SMP NEGERI 3 KROYA","Kroya","Kroya"],["20300551","SMP NEGERI 3 MAJENANG","Majenang","Majenang"],["20300550","SMP NEGERI 3 MAOS","Maos","Maos"],["20340978","SMP NEGERI 3 NUSAWUNGU","Nusawungu","Kroya"],["20360137","SMP NEGERI 3 SATAP CIPARI","Cipari","Sidareja"],["20341130","SMP NEGERI 3 SATU ATAP KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300549","SMP NEGERI 3 SIDAREJA","Sidareja","Sidareja"],["20331748","SMP NEGERI 3 WANAREJA","Wanareja","Majenang"],["20300548","SMP NEGERI 4 CILACAP","Cilacap Tengah","Kotip"],["20343695","SMP NEGERI 4 CIPARI","Cipari","Sidareja"],["20300547","SMP NEGERI 4 KROYA","Kroya","Kroya"],["20331749","SMP NEGERI 4 MAJENANG","Majenang","Majenang"],["20351874","SMP NEGERI 4 SATU ATAP CIMANGGU","Cimanggu","Majenang"],["20341608","SMP NEGERI 4 SATU ATAP KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20340874","SMP NEGERI 4 SATU ATAP KEDUNGREJA","Kedungreja","Sidareja"],["20300546","SMP NEGERI 5 CILACAP","Cilacap Utara","Kotip"],["20300545","SMP NEGERI 5 KROYA","Kroya","Kroya"],["20300544","SMP NEGERI 6 CILACAP","Cilacap Tengah","Kotip"],["20300543","SMP NEGERI 6 KROYA","Kroya","Kroya"],["20300542","SMP NEGERI 7 CILACAP","Cilacap Utara","Kotip"],["20300541","SMP NEGERI 8 CILACAP","Cilacap Selatan","Kotip"],["20300540","SMP NEGERI 9 CILACAP","Cilacap Tengah","Kotip"],["20341406","SMP NEGERI SATAP 5 MAJENANG","Majenang","Majenang"],["20353127","SMP NEGERI SATAP 6 MAJENANG","Majenang","Majenang"],["20353129","SMP NEGERI SATAP 7 MAJENANG","Majenang","Majenang"],["20338297","SMP NEGERI SATU ATAP 1 BANTARSARI","Bantarsari","Gandrungmangu"],["20340998","SMP NEGERI SATU ATAP 1 CIMANGGU","Cimanggu","Majenang"],["20338424","SMP NEGERI SATU ATAP 1 GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20340896","SMP NEGERI SATU ATAP 1 WANAREJA","Wanareja","Majenang"],["20354017","SMP NEGERI SATU ATAP 4 KAWUNGANTEN","Kawunganten","Jeruklegi"],["20331750","SMP NU CIPARI","Cipari","Sidareja"],["20300449","SMP NURUL HUDA GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300448","SMP NURUL MUBTADIIN","Kawunganten","Jeruklegi"],["20300447","SMP NUSANTARA JERUKLEGI","Jeruklegi","Jeruklegi"],["20331751","SMP PEMBUDI DARMA 1 KESUGIHAN","Kesugihan","Jeruklegi"],["20300445","SMP PEMDA 2 KESUGIHAN","Kesugihan","Jeruklegi"],["20300443","SMP PEMDA ADIPALA","Adipala","Maos"],["20300467","SMP PGRI 09 MAOS","Maos","Maos"],["20300441","SMP PGRI 1 CILACAP","Cilacap Utara","Kotip"],["20300438","SMP PGRI 11 KEDUNGREJA","Kedungreja","Sidareja"],["20300435","SMP PGRI 12 DAYEUHLUHUR","Dayeuhluhur","Majenang"],["20300452","SMP PGRI 18 CIMANGGU","Cimanggu","Majenang"],["20300472","SMP PGRI 23 BANTARSARI","Bantarsari","Gandrungmangu"],["20300470","SMP PGRI 27 CISURU","Cipari","Sidareja"],["20300469","SMP PGRI 3 CARUI CIPARI","Cipari","Majenang"],["20300468","SMP PGRI 4 NUSAWUNGU","Nusawungu","Kroya"],["20300440","SMP PGRI 5 GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20331753","SMP PGRI 6 GANDRUNGMANGU 2","Gandrungmangu","Gandrungmangu"],["20331754","SMP PGRI 7 WANAREJA","Wanareja","Majenang"],["20300466","SMP PIUS CILACAP","Cilacap Selatan","Kotip"],["20300465","SMP PIUS SIDAREJA","Sidareja","Sidareja"],["20300464","SMP PURNAMA 1 CILACAP","Cilacap Selatan","Kotip"],["20300463","SMP PURNAMA 2 CILACAP","Cilacap Tengah","Kotip"],["20300462","SMP PURNAMA GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300460","SMP PURNAMA KESUGIHAN","Kesugihan","Jeruklegi"],["20300459","SMP PURNAMA SAMPANG","Sampang","Maos"],["20300458","SMP RADEN FATAH CIMANGGU","Cimanggu","Majenang"],["20300457","SMP SULTAN AGUNG KAWUNGANTEN","Kawunganten","Jeruklegi"],["69971449","SMP TAKHASSUS AL QUR`AN SULTAN FATTAH","Cilacap Selatan","Kotip"],["20300455","SMP TAMAN HIDAYAH CILACAP","Cilacap Selatan","Kotip"],["20300594","SMP TAMTAMA SIDAREJA","Sidareja","Sidareja"],["70011381","SMP TEKNOKRAT BOARDING SCHOOL","Kawunganten","Jeruklegi"],["69974650","SMP TERPADU SABILUNNAJAH MAJENANG","Majenang","Majenang"],["20300569","SMP YA BAKII 04 KAWUNGANTEN","Kawunganten","Jeruklegi"],["20300571","SMP YA BAKII 1 KESUGIHAN","Kesugihan","Jeruklegi"],["20300570","SMP Ya BAKII 2 KESUGIHAN","Kesugihan","Jeruklegi"],["20331757","SMP YOS SOEDARSO SIDAURIP GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300564","SMP YOS SUDARSO MAJENANG","Majenang","Majenang"],["20300563","SMP YPE CILACAP","Cilacap Selatan","Kotip"],["20300561","SMP YPE NUSAWUNGU","Nusawungu","Kroya"],["70040449","SMPIT QUANTUM MULIA KROYA","Kroya","Kroya"],["20300699","SMP 10 NOPEMBER BINANGUN","Binangun","Kroya"],["20300698","SMP ADVENT CILACAP","Cilacap Selatan","Kotip"],["20300676","SMP AL HIDAYAH SIDAREJA","Sidareja","Sidareja"],["69900766","SMP AL HIKMAH KAMPUNGLAUT","Kampung Laut","Jeruklegi"],["20331736","SMP AL HIKMAH KAWUNGANTEN","Kawunganten","Jeruklegi"],["20331738","SMP AL ISLAM CIPARI","Cipari","Sidareja"],["20331740","SMP AL MANAAR KUTAWARU CILACAP","Cilacap Tengah","Kotip"],["34068303","SMP ALMA ATA","Majenang","Majenang"],["20300595","SMP ANAK SOLEH WANAREJA","Wanareja","Majenang"],["70011811","SMP AS SA`IDIYYAH WANAREJA","Wanareja","Majenang"],["20300513","SMP BAHARI KAWUNGANTEN","Kawunganten","Jeruklegi"],["20350704","SMP DARUSSALAM CIMANGGU","Cimanggu","Majenang"],["20300489","SMP DIPONEGORO CIMANGGU","Cimanggu","Majenang"],["20300488","SMP DIPONEGORO MAJENANG","Majenang","Majenang"],["20300487","SMP DIPONEGORO PATIMUAN","Patimuan","Sidareja"],["20300486","SMP DIPONEGORO SAMPANG","Sampang","Maos"],["20300485","SMP ISLAM AL AZHAR 15 CILACAP","Cilacap Tengah","Kotip"],["20300484","SMP ISLAM AL IRSYAD CILACAP","Cilacap Tengah","Kotip"],["20331737","SMP ISLAM AL IRSYAD GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["70028587","SMP ISLAM AL MUJAHIDIN","Cilacap Utara","Kotip"],["70043683","SMP ISLAM AL-FALAH DARUL MUTTAQIN BANTARSARI","Bantarsari","Gandrungmangu"],["20300483","SMP ISLAM CARUY","Cipari","Majenang"],["20300482","SMP ISLAM CILACAP","Cilacap Utara","Kotip"],["20300568","SMP Ya BAKII 5 KESUGIHAN","Kesugihan","Jeruklegi"],["20300566","SMP YOS SUDARSO JERUKLEGI","Jeruklegi","Jeruklegi"],["20300565","SMP YOS SUDARSO KAWUNGANTEN","Kawunganten","Jeruklegi"],["69969081","SMP ISLAM CITEPUS","Jeruklegi","Jeruklegi"],["20300481","SMP ISLAM KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300480","SMP ISLAM MAJENANG","Majenang","Majenang"],["70002846","SMP ISLAM TERPADU AL-HAMBRA","Cimanggu","Majenang"],["20360413","SMP IT BINA INSAN KAMIL SIDAREJA","Sidareja","Sidareja"],["69991321","SMP IT BUAH HATI BOARDING SCHOOL","Cilacap Utara","Kotip"],["70040565","SMP IT INSAN MULIA MAOS","Maos","Maos"],["20300478","SMP JENDERAL AHMAD YANI KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300477","SMP JENDERAL SUDIRMAN KEDUNGREJA","Kedungreja","Sidareja"],["20300494","SMP KRISTEN ADIPALA","Adipala","Maos"],["20300476","SMP KRISTEN GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300493","SMP KRISTEN PATIMUAN","Patimuan","Sidareja"],["20300495","SMP KRISTEN SIDAREJA","Sidareja","Sidareja"],["69851438","SMP MA`ARIF NU 1 MAJENANG","Majenang","Majenang"],["20300510","SMP MA`ARIF NU 2 MAJENANG","Majenang","Majenang"],["20341277","SMP MAARIF NU 1 WANAREJA","Wanareja","Majenang"],["20337857","SMP MAARIF NU CIMANGGU","Cimanggu","Majenang"],["20300512","SMP MAKMUR 1 CILACAP","Cilacap Utara","Kotip"],["20300511","SMP MARIA IMMACULATA CILACAP","Cilacap Tengah","Kotip"],["20300491","SMP MASYITHOH KROYA","Kroya","Kroya"],["20338572","SMP MIFTAHUL FALAH GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300508","SMP MUHAMMADIYAH 1 CILACAP","Cilacap Selatan","Kotip"],["20300507","SMP MUHAMMADIYAH 1 DAYEUHLUHUR","Dayeuhluhur","Majenang"],["20300474","SMP MUHAMMADIYAH 1 KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300506","SMP MUHAMMADIYAH 1 KROYA","Kroya","Kroya"],["20331745","SMP MUHAMMADIYAH 1 WANAREJA","Wanareja","Majenang"],["20300504","SMP MUHAMMADIYAH 2 BOLANG","Dayeuhluhur","Majenang"],["20300503","SMP MUHAMMADIYAH 2 CILACAP","Cilacap Utara","Kotip"],["20300502","SMP MUHAMMADIYAH 2 KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300501","SMP MUHAMMADIYAH 2 KROYA","Kroya","Kroya"],["20300500","SMP MUHAMMADIYAH 2 WANAREJA","Wanareja","Majenang"],["20353817","SMP MUHAMMADIYAH 3 DAYEUHLUHUR","Dayeuhluhur","Majenang"],["20340914","SMP MUHAMMADIYAH 3 KARANGPUCUNG","Karangpucung","Gandrungmangu"],["20300499","SMP MUHAMMADIYAH ADIPALA","Adipala","Maos"],["20300498","SMP MUHAMMADIYAH CIMANGGU","Cimanggu","Majenang"],["20300496","SMP MUHAMMADIYAH GANDRUNGMANGU","Gandrungmangu","Gandrungmangu"],["20300475","SMP MUHAMMADIYAH JERUKLEGI","Jeruklegi","Jeruklegi"],["20331744","SMP MUHAMMADIYAH KEDUNGREJA","Kedungreja","Sidareja"],["20300505","SMP MUHAMMADIYAH MAJENANG","Majenang","Majenang"],["20300473","SMP MUHAMMADIYAH MAOS","Maos","Maos"],["20300497","SMP MUHAMMADIYAH NUSAWUNGU","Nusawungu","Kroya"],["20300451","SMP MUHAMMADIYAH SAMPANG","Sampang","Maos"],["20300509","SMP MUHAMMADIYAH SIDAREJA","Sidareja","Sidareja"],["20300450","SMP NASIONAL SIDAREJA","Sidareja","Sidareja"],["20350709","SMP NEGERI 1 SATU ATAP KAMPUNG LAUT","Kampung Laut","Jeruklegi"]];
+
+var PETA = {};
+DATA_SEKOLAH.forEach(function (r) { PETA[r[0]] = r; });
+
+var el = function (id) { return document.getElementById(id); };
+var fileMurid = null; // {nama, tipe, data (base64)}
+
+function bersihAngka(s) { return (s || "").replace(/[^0-9]/g, ""); }
+
+el("npsn").addEventListener("input", function () {
+  var npsn = bersihAngka(this.value);
+  this.value = npsn;
+  var hint = el("npsnHint");
+  if (npsn.length === 0) {
+    hint.textContent = "Ketik 8 digit NPSN — nama sekolah dan Komda akan muncul otomatis.";
+    hint.className = "hint";
+    el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+    this.classList.remove("galat");
+    return;
+  }
+  if (npsn.length < 8) {
+    hint.textContent = "NPSN masih " + npsn.length + " digit — lanjutkan sampai 8 digit.";
+    hint.className = "hint";
+    el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+    this.classList.remove("galat");
+    return;
+  }
+  var r = PETA[npsn];
+  if (r) {
+    el("sekolah").value = r[1];
+    el("kecamatan").value = r[2];
+    el("komda").value = r[3];
+    hint.textContent = "✓ Sekolah ditemukan: " + r[1] + " — Komda " + r[3] + ".";
+    hint.className = "hint ok";
+    this.classList.remove("galat");
+  } else {
+    el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+    hint.textContent = "✗ NPSN tidak ditemukan dalam daftar sekolah Kab. Cilacap. Periksa kembali NPSN-nya.";
+    hint.className = "hint galat";
+    this.classList.add("galat");
+  }
+});
+
+["nipBindo", "nipMat"].forEach(function (id) {
+  el(id).addEventListener("input", function () { this.value = bersihAngka(this.value); });
+});
+
+// ---- Template CSV data murid ----
+var TEMPLATE_CSV =
+  "No,Nama,NIS,NISN,Kelas\r\n" +
+  "1,,,,\r\n" +
+  "2,,,,\r\n" +
+  "3,,,,\r\n";
+
+el("btnTemplat").addEventListener("click", function () {
+  var blob = new Blob(["\ufeff" + TEMPLATE_CSV], { type: "text/csv;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Template-Data-Murid-Kelas-9.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+});
+
+// ---- Pilih file data murid ----
+el("fileMurid").addEventListener("change", function () {
+  var f = this.files && this.files[0];
+  var info = el("fileInfo");
+  fileMurid = null;
+  if (!f) { info.style.display = "none"; return; }
+  var reader = new FileReader();
+  reader.onload = function (ev) {
+    var dataUrl = String(ev.target.result || "");
+    fileMurid = { nama: f.name, tipe: f.type || "application/octet-stream", data: dataUrl.split(",")[1] || "" };
+    info.style.display = "block";
+    info.style.color = "#15803d";
+    info.textContent = "✓ File dipilih: " + f.name + " (" + (f.size / 1024).toFixed(0) + " KB).";
+  };
+  reader.readAsDataURL(f);
+});
+
+function tampilPesan(ok, html) {
+  var p = el("pesan");
+  p.className = "pesan " + (ok ? "ok" : "galat");
+  p.innerHTML = html;
+  p.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+el("formTKA").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var npsn = el("npsn").value.trim();
+  var sekolah = el("sekolah").value.trim();
+  var kecamatan = el("kecamatan").value.trim();
+  var komda = el("komda").value.trim();
+  var guruBindo = el("guruBindo").value.trim();
+  var nipBindo = el("nipBindo").value.trim();
+  var guruMat = el("guruMat").value.trim();
+  var nipMat = el("nipMat").value.trim();
+
+  if (npsn.length !== 8) return tampilPesan(false, "<b>NPSN belum benar.</b> Isi 8 digit NPSN sekolah.");
+  if (!sekolah) return tampilPesan(false, "<b>NPSN tidak ditemukan.</b> Periksa kembali NPSN-nya — nama sekolah harus muncul otomatis.");
+  if (!guruBindo) return tampilPesan(false, "<b>Nama Guru Bahasa Indonesia</b> wajib diisi.");
+  if (!/^[0-9]{18}$/.test(nipBindo)) return tampilPesan(false, "<b>NIP Guru Bahasa Indonesia</b> harus 18 digit angka.");
+  if (!guruMat) return tampilPesan(false, "<b>Nama Guru Matematika</b> wajib diisi.");
+  if (!/^[0-9]{18}$/.test(nipMat)) return tampilPesan(false, "<b>NIP Guru Matematika</b> harus 18 digit angka.");
+  if (!fileMurid) return tampilPesan(false, "<b>File Data Murid Kelas 9</b> wajib diunggah. Unduh templatenya bila belum punya.");
+  if (WEBAPP_URL.indexOf("XXXX") !== -1) return tampilPesan(false, "<b>Form belum terhubung ke server.</b> Panitia masih menyiapkan alamat pengiriman (WEBAPP_URL).");
+
+  var btn = el("btnKirim");
+  btn.disabled = true;
+  btn.textContent = "Mengirim…";
+  tampilPesan(true, "Mengirim pendaftaran… mohon tunggu.");
+
+  fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      npsn: npsn, sekolah: sekolah, kecamatan: kecamatan, komda: komda,
+      guruBindo: guruBindo, nipBindo: nipBindo, guruMat: guruMat, nipMat: nipMat,
+      fileNama: fileMurid.nama, fileTipe: fileMurid.tipe, fileData: fileMurid.data
+    })
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (hasil) {
+    btn.disabled = false;
+    btn.textContent = "Kirim Pendaftaran";
+    if (hasil && hasil.ok) {
+      tampilPesan(true, "<b>✓ Pendaftaran berhasil terkirim.</b><br>" +
+        "Sekolah: <b>" + sekolah + "</b> (NPSN " + npsn + ", Komda " + komda + ")<br>" +
+        "File data murid: <b>" + fileMurid.nama + "</b><br>" +
+        "Simpan halaman ini sebagai bukti pendaftaran.");
+      el("formTKA").reset();
+      el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+      el("npsnHint").textContent = "Ketik 8 digit NPSN — nama sekolah dan Komda akan muncul otomatis.";
+      el("npsnHint").className = "hint";
+      el("fileInfo").style.display = "none";
+      fileMurid = null;
+    } else {
+      tampilPesan(false, "<b>✗ Pendaftaran gagal.</b> " + ((hasil && hasil.pesan) || "Terjadi kesalahan."));
+    }
+  })
+  .catch(function (err) {
+    btn.disabled = false;
+    btn.textContent = "Kirim Pendaftaran";
+    tampilPesan(false, "<b>✗ Tidak dapat terhubung ke server.</b> Periksa koneksi internet, lalu coba kirim lagi. (" + err.message + ")");
+  });
+});
+</script>
+</body>
+</html>

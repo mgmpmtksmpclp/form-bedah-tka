@@ -1,0 +1,72 @@
+PANDUAN — Form Pendaftaran Bedah TKA 2026/2027
+======================================
+File: index.html (form), Code.gs (backend Apps Script),
+Template-Data-Murid-Kelas-9.csv (salinan template; di form, template
+juga bisa diunduh lewat tombol "Unduh Template Data Murid").
+
+ISI FORM
+--------
+- NPSN (8 digit) — begitu 8 digit, Nama Sekolah + Kecamatan + Komda
+  terisi otomatis dari daftar 195 SMP Kab. Cilacap (disisipkan di
+  index.html dari tautan CSV yang Bapak berikan).
+- Nama Guru Bahasa Indonesia
+- NIP Guru Bahasa Indonesia (18 digit angka)
+- Nama Guru Mata Pelajaran Matematika
+- NIP Guru Mata Pelajaran Matematika (18 digit angka)
+- Upload Data Murid Kelas 9 (CSV/Excel; template tersedia
+  lewat tombol di form).
+Satu NPSN hanya boleh terdaftar satu kali. Data tersimpan di Google
+Sheet (tab "Pendaftaran") dan file data murid tersimpan di folder
+Drive "Data Murid TKA" (tautannya dicatat di Sheet).
+
+CARA PASANG (sekali saja)
+-------------------------
+A. BACKEND (Google Sheet + Apps Script)
+1. Buat Google Sheet baru, mis. bernama "Pendaftaran TKA Kelas 9".
+2. Di Sheet itu: menu Extensions > Apps Script.
+3. Hapus isi Code.gs yang lama, tempel seluruh isi file Code.gs ini,
+   lalu simpan (ikon disket / Ctrl+S).
+4. Di editor Apps Script, pilih fungsi "siapkanSheet" di menu atas,
+   klik Run. Beri izin saat diminta (pilih akun Bapak > Advanced >
+   Go to ... > Allow). Fungsi ini membuat tab "Pendaftaran" + header.
+5. Deploy > New deployment > pilih type "Web app":
+   - Description: "Form Pendaftaran Bedah TKA 2026/2027" (bebas)
+   - Execute as: Me
+   - Who has access: Anyone
+   - Deploy > salin URL Web App (berakhiran /exec).
+
+B. FORM (index.html) — lewat GitHub + VPS
+6. WEBAPP_URL di index.html SUDAH diisi dengan URL Web App yang
+   ter-deploy (12 Nov 2026). Bila Web App di-deploy ulang dan URL-nya
+   berubah, ubah baris WEBAPP_URL di index.html lalu bangun ulang
+   lewat build_index.py.
+7. Repo GitHub: wartam-mjng/form-tka (publik). Di VPS, clone ke
+   /home/ubuntu/form-tka, lalu Caddy menyajikannya di
+   https://tka.mgmpmtkcilacap.web.id (perlu record A: tka ->
+   43.156.129.225 di DNS mgmpmtkcilacap.web.id).
+8. Bila ada perubahan form: ubah build_index.py -> jalankan
+   python3 build_index.py -> commit + push ke GitHub -> di VPS:
+   cd /home/ubuntu/form-tka && git pull && sudo chmod -R a+rX .
+
+C. UJI COBA
+9. Buka alamat form, isi NPSN 20331749 — harus muncul
+   "SMP NEGERI 4 MAJENANG — Komda Majenang".
+10. Isi semua field + unggah file data murid (boleh pakai template
+    yang diunduh dari form), lalu kirim.
+11. Periksa Sheet tab "Pendaftaran" (harus ada 1 baris baru) dan
+    folder Drive "Data Murid TKA" (harus ada file-nya).
+12. Bila uji coba memakai NPSN asli, hapus baris uji itu dari Sheet
+    (dan file-nya dari Drive) supaya NPSN tersebut bisa mendaftar
+    sungguhan — satu NPSN hanya bisa terdaftar satu kali.
+
+CATATAN
+-------
+- Template data murid: No, Nama, NIS, NISN, Kelas. Satu murid per baris.
+- Bila daftar sekolah berubah (ada sekolah baru / NPSN berubah),
+  unduh ulang CSV dari tautan yang sama, lalu minta saya bangun ulang
+  index.html — data sekolah disisipkan di dalam file, bukan dibaca
+  langsung dari internet, supaya form tetap jalan walau luring.
+- Bila ada guru honorer tanpa NIP (NIP 18 digit wajib saat ini),
+  kabari saya — validasi NIP bisa dibuat opsional.
+- File Code.gs ini TIDAK memakai PIN admin dan TIDAK ada halaman
+  admin; bila nanti perlu halaman rekap/hapus, bisa ditambahkan.
