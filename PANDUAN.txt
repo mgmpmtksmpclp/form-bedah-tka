@@ -14,12 +14,12 @@ ISI FORM
   DITEMUKAN dalam daftar, ketiga field itu terbuka dan bisa diisi
   manual (sekolah baru / NPSN belum masuk daftar) — pendaftaran
   tetap bisa dikirim.
-- Nama Guru Bahasa Indonesia
-- NIP Guru Bahasa Indonesia — BOLEH KOSONG bila guru honorer tanpa
-  NIP; bila diisi harus 18 digit angka.
-- Nama Guru Mata Pelajaran Matematika
-- NIP Guru Mata Pelajaran Matematika — BOLEH KOSONG bila guru honorer
-  tanpa NIP; bila diisi harus 18 digit angka.
+- Data Peserta — 1 baris per orang: Mata Pelajaran (Bahasa Indonesia /
+  Matematika), Nama, NIP (boleh kosong bila honorer tanpa NIP; bila
+  diisi harus 18 digit). Bawaan 2 baris (1 B. Indonesia + 1 Matematika);
+  tombol "＋ Tambah Peserta" menambah baris, tombol ✕ menghapus baris
+  (minimal 1 baris tersisa). Satu sekolah boleh mengirim lebih dari
+  1 orang per mata pelajaran.
 - Upload Data Murid Kelas 9 (CSV/Excel; template tersedia
   lewat tombol di form).
 Satu NPSN hanya boleh terdaftar satu kali. Data tersimpan di Google
@@ -73,6 +73,12 @@ CATATAN
   unduh ulang CSV dari tautan yang sama, lalu minta saya bangun ulang
   index.html — data sekolah disisipkan di dalam file, bukan dibaca
   langsung dari internet, supaya form tetap jalan walau luring.
+- Sheet "Pendaftaran" kini 1 baris PER PESERTA (kolom: Waktu | NPSN |
+  Nama Sekolah | Kecamatan | Komda | Mata Pelajaran | Nama Peserta |
+  NIP Peserta | Nama File Data Murid | Tautan File Data Murid). Bila
+  Code.gs diperbarui, jalankan siapkanSheet() sekali untuk memperbarui
+  header (baris data lama tidak ikut berubah — bila sudah ada baris
+  format lama, hapus/pindahkan manual).
 - Bila ada guru honorer tanpa NIP, kolom NIP boleh dikosongkan.
 - Bila ada perubahan Code.gs, tempel ulang di editor Apps Script lalu
   Deploy > Manage deployments > pilih deployment > Version: New

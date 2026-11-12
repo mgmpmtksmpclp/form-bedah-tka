@@ -9,9 +9,11 @@ Tayang di https://tka.mgmpmtkcilacap.web.id (VPS).
 - **NPSN** (8 digit) — begitu 8 digit, Nama Sekolah + Kecamatan + Komda
   terisi otomatis dari daftar 195 SMP Kab. Cilacap. Bila NPSN tidak
   ditemukan dalam daftar, ketiga field itu terbuka dan bisa diisi manual.
-- **Data Peserta** — Nama + NIP Guru Bahasa Indonesia dan
-  Guru Matematika. NIP boleh kosong bila guru honorer tanpa NIP;
-  bila diisi harus 18 digit angka.
+- **Data Peserta** — 1 baris per orang: Mata Pelajaran (Bahasa
+  Indonesia / Matematika), Nama, NIP (boleh kosong bila guru honorer
+  tanpa NIP; bila diisi harus 18 digit). Bawaan 2 baris; tombol
+  "＋ Tambah Peserta" menambah baris. Satu sekolah boleh mengirim
+  lebih dari 1 orang per mata pelajaran.
 - **Data Murid Kelas 9** — unggah file CSV/Excel (template tersedia di
   form, kolom: No, Nama, NIS, NISN, Kelas).
 

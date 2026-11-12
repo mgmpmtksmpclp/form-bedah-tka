@@ -13,8 +13,9 @@
  * 5. Tempel URL itu ke WEBAPP_URL di index.html (ganti yang berisi XXXX).
  *
  * ALUR DATA: form (index.html) --POST JSON--> doPost() --> simpan file
- * data murid ke folder Drive "Data Murid TKA" + tambah 1 baris ke tab
- * "Pendaftaran". Satu NPSN hanya boleh terdaftar satu kali.
+ * data murid ke folder Drive "Data Murid TKA" + tambah 1 baris PER
+ * PESERTA ke tab "Pendaftaran" (satu sekolah boleh mengirim lebih dari
+ * 1 orang per mata pelajaran). Satu NPSN hanya boleh terdaftar satu kali.
  */
 
 /* ============================== KONFIG ============================== */
@@ -25,8 +26,7 @@ var SPREADSHEET_ID = '';
 var NAMA_SHEET = 'Pendaftaran';
 var NAMA_FOLDER = 'Data Murid TKA';
 var HEADER = ['Waktu Daftar', 'NPSN', 'Nama Sekolah', 'Kecamatan', 'Komda',
-  'Guru Bahasa Indonesia', 'NIP Guru B. Indonesia',
-  'Guru Matematika', 'NIP Guru Matematika',
+  'Mata Pelajaran', 'Nama Peserta', 'NIP Peserta',
   'Nama File Data Murid', 'Tautan File Data Murid'];
 
 /* ============================== WEB APP ============================== */
@@ -39,7 +39,8 @@ function doGet(e) {
 
 // Dipanggil form dengan fetch POST + Content-Type text/plain (tanpa
 // preflight CORS). Body berupa JSON:
-// {npsn, sekolah, kecamatan, komda, guruBindo, nipBindo, guruMat, nipMat,
+// {npsn, sekolah, kecamatan, komda,
+//  peserta: [{mapel: 'Bahasa Indonesia'|'Matematika', nama, nip}],
 //  fileNama, fileTipe, fileData (base64 tanpa prefix data:)}.
 function doPost(e) {
   var hasil;
@@ -61,17 +62,28 @@ function daftar_(d) {
   var sekolah = bersih_(d.sekolah);
   var kecamatan = bersih_(d.kecamatan);
   var komda = bersih_(d.komda);
-  var guruBindo = bersih_(d.guruBindo);
-  var nipBindo = bersih_(d.nipBindo);
-  var guruMat = bersih_(d.guruMat);
-  var nipMat = bersih_(d.nipMat);
+  // Peserta: array [{mapel, nama, nip}] (format baru). Kompatibel mundur:
+  // bila tidak ada, rakit dari field lama guruBindo/nipBindo/guruMat/nipMat.
+  var peserta = [];
+  if (d.peserta && d.peserta.length) {
+    for (var i = 0; i < d.peserta.length; i++) {
+      peserta.push({ mapel: bersih_(d.peserta[i].mapel), nama: bersih_(d.peserta[i].nama), nip: bersih_(d.peserta[i].nip) });
+    }
+  } else {
+    if (bersih_(d.guruBindo)) peserta.push({ mapel: 'Bahasa Indonesia', nama: bersih_(d.guruBindo), nip: bersih_(d.nipBindo) });
+    if (bersih_(d.guruMat)) peserta.push({ mapel: 'Matematika', nama: bersih_(d.guruMat), nip: bersih_(d.nipMat) });
+  }
 
   if (!/^[0-9]{8}$/.test(npsn)) return { ok: false, pesan: 'NPSN harus 8 digit angka.' };
   if (!sekolah) return { ok: false, pesan: 'Nama sekolah kosong.' };
-  if (!guruBindo) return { ok: false, pesan: 'Nama Guru Bahasa Indonesia wajib diisi.' };
-  if (nipBindo && !/^[0-9]{18}$/.test(nipBindo)) return { ok: false, pesan: 'NIP Guru Bahasa Indonesia harus 18 digit angka bila diisi.' };
-  if (!guruMat) return { ok: false, pesan: 'Nama Guru Matematika wajib diisi.' };
-  if (nipMat && !/^[0-9]{18}$/.test(nipMat)) return { ok: false, pesan: 'NIP Guru Matematika harus 18 digit angka bila diisi.' };
+  if (!kecamatan) return { ok: false, pesan: 'Kecamatan kosong.' };
+  if (!komda) return { ok: false, pesan: 'Komda kosong.' };
+  if (!peserta.length) return { ok: false, pesan: 'Isi minimal 1 peserta.' };
+  for (var j = 0; j < peserta.length; j++) {
+    if (peserta[j].mapel !== 'Bahasa Indonesia' && peserta[j].mapel !== 'Matematika') return { ok: false, pesan: 'Mata pelajaran peserta ke-' + (j + 1) + ' tidak dikenal.' };
+    if (!peserta[j].nama) return { ok: false, pesan: 'Nama peserta ke-' + (j + 1) + ' wajib diisi.' };
+    if (peserta[j].nip && !/^[0-9]{18}$/.test(peserta[j].nip)) return { ok: false, pesan: 'NIP peserta ke-' + (j + 1) + ' harus 18 digit angka bila diisi.' };
+  }
   if (!d.fileData) return { ok: false, pesan: 'File Data Murid Kelas 9 wajib diunggah.' };
 
   var sheet = sheet_();
@@ -85,10 +97,12 @@ function daftar_(d) {
 
   var tautanFile = simpanFile_(d, npsn, sekolah);
   var waktu = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyy-MM-dd HH:mm:ss');
-  sheet.appendRow([waktu, "'" + npsn, sekolah, kecamatan, komda,
-    guruBindo, nipBindo ? "'" + nipBindo : '', guruMat, nipMat ? "'" + nipMat : '',
-    String(d.fileNama || ''), tautanFile]);
-  return { ok: true, pesan: 'Pendaftaran tersimpan.', tautanFile: tautanFile };
+  for (var k = 0; k < peserta.length; k++) {
+    sheet.appendRow([waktu, "'" + npsn, sekolah, kecamatan, komda,
+      peserta[k].mapel, peserta[k].nama, peserta[k].nip ? "'" + peserta[k].nip : '',
+      String(d.fileNama || ''), tautanFile]);
+  }
+  return { ok: true, pesan: 'Pendaftaran tersimpan (' + peserta.length + ' peserta).', tautanFile: tautanFile };
 }
 
 // Simpan file data murid ke folder Drive, kembalikan tautannya.
@@ -134,10 +148,13 @@ function folder_() {
 }
 
 // Jalankan sekali dari editor Apps Script untuk menyiapkan tab + header.
+// Bila header lama berbeda (mis. habis ganti format kolom), baris 1
+// dibersihkan dulu lalu ditulis header baru.
 function siapkanSheet() {
   var sheet = sheet_();
   var kepala = sheet.getRange(1, 1, 1, HEADER.length).getValues()[0];
   if (kepala.join('|') !== HEADER.join('|')) {
+    sheet.getRange(1, 1, 1, 20).clearContent();
     sheet.getRange(1, 1, 1, HEADER.length).setValues([HEADER]);
     sheet.getRange(1, 1, 1, HEADER.length).setFontWeight('bold');
     sheet.setFrozenRows(1);

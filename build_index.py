@@ -46,6 +46,12 @@ button.templat:hover { background: #f0fdfa; }
 .bagian { border-top: 2px solid #fde68a; margin-top: 22px; padding-top: 4px; }
 .bagian h2 { font-size: 17px; color: #b45309; margin: 14px 0 0; }
 .kaki { font-size: 12px; color: #9ca3af; text-align: center; margin: 18px 0 0; }
+.peserta { border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 12px; margin-bottom: 10px; background: #fafafa; }
+.peserta .baris-atas { display: flex; gap: 8px; }
+.peserta .baris-atas select { flex: 1; width: auto; }
+.peserta input { margin-top: 8px; }
+button.hapus { flex-shrink: 0; width: 44px; border: 1.5px solid #fca5a5; background: #fff; color: #dc2626; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: inherit; }
+button.hapus:hover { background: #fee2e2; }
 </style>
 </head>
 <body>
@@ -78,22 +84,9 @@ button.templat:hover { background: #f0fdfa; }
       <input id="komda" readonly placeholder="— terisi otomatis dari NPSN —">
 
       <div class="bagian"><h2>👥 Data Peserta</h2></div>
-
-      <label for="guruBindo">Nama Guru Bahasa Indonesia <span class="wajib">*</span></label>
-      <input id="guruBindo" autocomplete="off" placeholder="Contoh: Siti Aminah, S.Pd.">
-
-      <label for="nipBindo">NIP Guru Bahasa Indonesia</label>
-      <input id="nipBindo" inputmode="numeric" autocomplete="off" maxlength="18"
-             placeholder="Contoh: 198506122009032001 (18 digit)">
-      <p class="hint">Kosongkan bila guru honorer tanpa NIP. Bila diisi, harus 18 digit angka.</p>
-
-      <label for="guruMat">Nama Guru Mata Pelajaran Matematika <span class="wajib">*</span></label>
-      <input id="guruMat" autocomplete="off" placeholder="Contoh: Budi Santoso, S.Pd.">
-
-      <label for="nipMat">NIP Guru Mata Pelajaran Matematika</label>
-      <input id="nipMat" inputmode="numeric" autocomplete="off" maxlength="18"
-             placeholder="Contoh: 198803152010011002 (18 digit)">
-      <p class="hint">Kosongkan bila guru honorer tanpa NIP. Bila diisi, harus 18 digit angka.</p>
+      <p class="hint">Satu sekolah boleh mengirim lebih dari 1 orang per mata pelajaran. Isi 1 baris untuk setiap orang, lalu tekan "＋ Tambah Peserta" bila masih ada lagi.</p>
+      <div id="daftarPeserta" style="margin-top:12px"></div>
+      <button type="button" class="templat" id="btnTambahPeserta">＋ Tambah Peserta</button>
 
       <div class="bagian"><h2>🧑‍🎓 Data Murid Kelas 9</h2></div>
 
@@ -176,9 +169,33 @@ el("npsn").addEventListener("input", function () {
   }
 });
 
-["nipBindo", "nipMat"].forEach(function (id) {
-  el(id).addEventListener("input", function () { this.value = bersihAngka(this.value); });
-});
+// ---- Daftar peserta (dinamis: 1 baris = 1 orang) ----
+function tambahPeserta(mapel) {
+  var wadah = el("daftarPeserta");
+  var div = document.createElement("div");
+  div.className = "peserta";
+  div.innerHTML =
+    '<div class="baris-atas">' +
+      '<select class="p-mapel" aria-label="Mata Pelajaran">' +
+        '<option value="">— Pilih Mata Pelajaran —</option>' +
+        '<option value="Bahasa Indonesia"' + (mapel === "Bahasa Indonesia" ? " selected" : "") + '>Bahasa Indonesia</option>' +
+        '<option value="Matematika"' + (mapel === "Matematika" ? " selected" : "") + '>Matematika</option>' +
+      '</select>' +
+      '<button type="button" class="hapus" title="Hapus peserta ini">✕</button>' +
+    '</div>' +
+    '<input class="p-nama" autocomplete="off" placeholder="Contoh: Siti Aminah, S.Pd.">' +
+    '<input class="p-nip" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="NIP (18 digit) — kosongkan bila honorer tanpa NIP">';
+  div.querySelector(".p-nip").addEventListener("input", function () { this.value = bersihAngka(this.value); });
+  div.querySelector(".hapus").addEventListener("click", function () {
+    if (document.querySelectorAll(".peserta").length <= 1) return;
+    div.remove();
+  });
+  wadah.appendChild(div);
+  return div;
+}
+tambahPeserta("Bahasa Indonesia");
+tambahPeserta("Matematika");
+el("btnTambahPeserta").addEventListener("click", function () { tambahPeserta(""); });
 
 // ---- Template CSV data murid ----
 var TEMPLATE_CSV =
@@ -228,19 +245,26 @@ el("formTKA").addEventListener("submit", function (ev) {
   var sekolah = el("sekolah").value.trim();
   var kecamatan = el("kecamatan").value.trim();
   var komda = el("komda").value.trim();
-  var guruBindo = el("guruBindo").value.trim();
-  var nipBindo = el("nipBindo").value.trim();
-  var guruMat = el("guruMat").value.trim();
-  var nipMat = el("nipMat").value.trim();
+  var peserta = [];
+  var barisPeserta = document.querySelectorAll(".peserta");
+  for (var i = 0; i < barisPeserta.length; i++) {
+    peserta.push({
+      mapel: barisPeserta[i].querySelector(".p-mapel").value,
+      nama: barisPeserta[i].querySelector(".p-nama").value.trim(),
+      nip: bersihAngka(barisPeserta[i].querySelector(".p-nip").value.trim())
+    });
+  }
 
   if (npsn.length !== 8) return tampilPesan(false, "<b>NPSN belum benar.</b> Isi 8 digit NPSN sekolah.");
   if (!sekolah) return tampilPesan(false, "<b>Nama Sekolah</b> wajib diisi — terisi otomatis dari NPSN, atau ketik manual bila NPSN tidak ditemukan.");
   if (!kecamatan) return tampilPesan(false, "<b>Kecamatan</b> wajib diisi.");
   if (!komda) return tampilPesan(false, "<b>Komda</b> wajib diisi.");
-  if (!guruBindo) return tampilPesan(false, "<b>Nama Guru Bahasa Indonesia</b> wajib diisi.");
-  if (nipBindo && !/^[0-9]{18}$/.test(nipBindo)) return tampilPesan(false, "<b>NIP Guru Bahasa Indonesia</b> harus 18 digit angka bila diisi.");
-  if (!guruMat) return tampilPesan(false, "<b>Nama Guru Matematika</b> wajib diisi.");
-  if (nipMat && !/^[0-9]{18}$/.test(nipMat)) return tampilPesan(false, "<b>NIP Guru Matematika</b> harus 18 digit angka bila diisi.");
+  if (!peserta.length) return tampilPesan(false, "<b>Data Peserta</b> wajib diisi minimal 1 orang.");
+  for (var j = 0; j < peserta.length; j++) {
+    if (!peserta[j].mapel) return tampilPesan(false, "<b>Peserta ke-" + (j + 1) + "</b>: pilih Mata Pelajaran.");
+    if (!peserta[j].nama) return tampilPesan(false, "<b>Peserta ke-" + (j + 1) + "</b>: nama wajib diisi.");
+    if (peserta[j].nip && !/^[0-9]{18}$/.test(peserta[j].nip)) return tampilPesan(false, "<b>Peserta ke-" + (j + 1) + "</b>: NIP harus 18 digit angka bila diisi.");
+  }
   if (!fileMurid) return tampilPesan(false, "<b>File Data Murid Kelas 9</b> wajib diunggah. Unduh templatenya bila belum punya.");
   if (WEBAPP_URL.indexOf("XXXX") !== -1) return tampilPesan(false, "<b>Form belum terhubung ke server.</b> Panitia masih menyiapkan alamat pengiriman (WEBAPP_URL).");
 
@@ -254,7 +278,7 @@ el("formTKA").addEventListener("submit", function (ev) {
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({
       npsn: npsn, sekolah: sekolah, kecamatan: kecamatan, komda: komda,
-      guruBindo: guruBindo, nipBindo: nipBindo, guruMat: guruMat, nipMat: nipMat,
+      peserta: peserta,
       fileNama: fileMurid.nama, fileTipe: fileMurid.tipe, fileData: fileMurid.data
     })
   })
@@ -265,11 +289,15 @@ el("formTKA").addEventListener("submit", function (ev) {
     if (hasil && hasil.ok) {
       tampilPesan(true, "<b>✓ Pendaftaran berhasil terkirim.</b><br>" +
         "Sekolah: <b>" + sekolah + "</b> (NPSN " + npsn + ", Komda " + komda + ")<br>" +
+        "Peserta: <b>" + peserta.length + " orang</b><br>" +
         "File data murid: <b>" + fileMurid.nama + "</b><br>" +
         "Simpan halaman ini sebagai bukti pendaftaran.");
       el("formTKA").reset();
       el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
       aturManualSekolah(false);
+      el("daftarPeserta").innerHTML = "";
+      tambahPeserta("Bahasa Indonesia");
+      tambahPeserta("Matematika");
       el("npsnHint").textContent = "Ketik 8 digit NPSN — nama sekolah dan Komda akan muncul otomatis.";
       el("npsnHint").className = "hint";
       el("fileInfo").style.display = "none";
