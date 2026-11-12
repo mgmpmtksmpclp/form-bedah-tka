@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """Bangun index.html Form Pendaftaran TKA (data 195 sekolah disisipkan)."""
-import csv, json, os
+import base64, csv, json, os
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 rows = list(csv.DictReader(open(os.path.join(SRC, 'data-sekolah.csv'), encoding='utf-8-sig')))
 # format ringkas: [NPSN, Nama, Kecamatan, Komda]
 data = [[r['NPSN'].strip(), r['Nama Satuan Pendidikan'].strip(), r['Kecamatan'].strip(), r['Komda'].strip()] for r in rows]
 DATA_JSON = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+# Logo panitia (lambang saja, tanpa teks) disisipkan sebagai data URI.
+LOGO_B64 = base64.b64encode(open(os.path.join(SRC, 'logo-panitia.png'), 'rb').read()).decode()
 
 HTML = r"""<!DOCTYPE html>
 <html lang="id">
@@ -19,8 +21,8 @@ HTML = r"""<!DOCTYPE html>
 body { font-family: "Times New Roman", Times, serif; background: #fff8e1; margin: 0; padding: 18px 14px; color: #1f2937; }
 .kartu { max-width: 620px; margin: 0 auto; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,118,110,.18); }
 .kepala { background: linear-gradient(90deg,#075985,#0369a1 50%,#0ea5e9); padding: 24px 24px 18px; color: #fff; }
-.kepala-isi { display: flex; align-items: flex-start; gap: 10px; }
-.kepala-ikon { font-size: 26px; line-height: 1.25; }
+.kepala-isi { display: flex; align-items: flex-start; gap: 12px; }
+.kepala-logo { width: 64px; height: 64px; border-radius: 50%; border: 3px solid rgba(255,255,255,.9); object-fit: cover; flex-shrink: 0; background: #fff8e1; }
 .kepala h1 { margin: 0; font-size: 26px; }
 .kepala p { margin: 6px 0 0; font-size: 15px; opacity: .95; }
 .isi { padding: 8px 24px 22px; }
@@ -50,10 +52,10 @@ button.templat:hover { background: #f0fdfa; }
 <div class="kartu">
   <div class="kepala">
     <div class="kepala-isi">
-      <span class="kepala-ikon">📋</span>
+      <img class="kepala-logo" src="data:image/png;base64,__LOGO_B64__" alt="Logo Panitia Bedah TKA">
       <div>
         <h1>Form Pendaftaran Bedah TKA 2026/2027</h1>
-        <p>Panitia Bedah TKA TP 2026/2027 Kabupaten Cilacap</p>
+        <p>Panitia Bedah TKA TA 2026/2027 Kabupaten Cilacap</p>
       </div>
     </div>
   </div>
@@ -287,7 +289,7 @@ el("formTKA").addEventListener("submit", function (ev) {
 </html>
 """
 
-html = HTML.replace('__DATA_JSON__', DATA_JSON)
+html = HTML.replace('__DATA_JSON__', DATA_JSON).replace('__LOGO_B64__', LOGO_B64)
 out = os.path.join(SRC, 'index.html')
 open(out, 'w', encoding='utf-8').write(html)
 print('index.html:', len(html), 'byte, sekolah:', len(data))

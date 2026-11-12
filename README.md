@@ -1,6 +1,6 @@
 # Form Pendaftaran Bedah TKA 2026/2027
 
-Form pendaftaran Bedah TKA TP 2026/2027 Kabupaten Cilacap (Kelas 9).
+Form pendaftaran Bedah TKA TA 2026/2027 Kabupaten Cilacap (Kelas 9).
 Repo: https://github.com/mgmpmtksmpclp/form-bedah-tka
 Tayang di https://tka.mgmpmtkcilacap.web.id (VPS).
 
@@ -28,7 +28,10 @@ Halaman baru ditambahkan sebagai file HTML terpisah di repo ini
 
 ## File
 
-- `index.html` — form (satu file, sudah berisi data 195 sekolah).
+- `index.html` — form (satu file, sudah berisi data 195 sekolah dan
+  logo panitia).
+- `logo-panitia.png` — lambang panitia di kepala form (disisipkan ke
+  `index.html` saat build lewat `build_index.py`).
 - `Code.gs` — backend Google Apps Script.
 - `Template-Data-Murid-Kelas-9.csv` — template data murid.
 - `PANDUAN.txt` — panduan pasang lengkap (Sheet + Apps Script + VPS).

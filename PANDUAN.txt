@@ -2,7 +2,9 @@ PANDUAN — Form Pendaftaran Bedah TKA 2026/2027
 ======================================
 File: index.html (form), Code.gs (backend Apps Script),
 Template-Data-Murid-Kelas-9.csv (salinan template; di form, template
-juga bisa diunduh lewat tombol "Unduh Template Data Murid").
+juga bisa diunduh lewat tombol "Unduh Template Data Murid"),
+logo-panitia.png (lambang panitia di kepala form, disisipkan ke
+index.html saat build).
 
 ISI FORM
 --------
