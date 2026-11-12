@@ -80,16 +80,18 @@ button.templat:hover { background: #f0fdfa; }
       <label for="guruBindo">Nama Guru Bahasa Indonesia <span class="wajib">*</span></label>
       <input id="guruBindo" autocomplete="off" placeholder="Contoh: Siti Aminah, S.Pd.">
 
-      <label for="nipBindo">NIP Guru Bahasa Indonesia <span class="wajib">*</span></label>
+      <label for="nipBindo">NIP Guru Bahasa Indonesia</label>
       <input id="nipBindo" inputmode="numeric" autocomplete="off" maxlength="18"
              placeholder="Contoh: 198506122009032001 (18 digit)">
+      <p class="hint">Kosongkan bila guru honorer tanpa NIP. Bila diisi, harus 18 digit angka.</p>
 
       <label for="guruMat">Nama Guru Mata Pelajaran Matematika <span class="wajib">*</span></label>
       <input id="guruMat" autocomplete="off" placeholder="Contoh: Budi Santoso, S.Pd.">
 
-      <label for="nipMat">NIP Guru Mata Pelajaran Matematika <span class="wajib">*</span></label>
+      <label for="nipMat">NIP Guru Mata Pelajaran Matematika</label>
       <input id="nipMat" inputmode="numeric" autocomplete="off" maxlength="18"
              placeholder="Contoh: 198803152010011002 (18 digit)">
+      <p class="hint">Kosongkan bila guru honorer tanpa NIP. Bila diisi, harus 18 digit angka.</p>
 
       <div class="bagian"><h2>🧑‍🎓 Data Murid Kelas 9</h2></div>
 
@@ -125,6 +127,15 @@ var fileMurid = null; // {nama, tipe, data (base64)}
 
 function bersihAngka(s) { return (s || "").replace(/[^0-9]/g, ""); }
 
+// Bila NPSN tidak ditemukan dalam daftar, ketiga field sekolah dibuka
+// untuk diisi manual; bila ditemukan (atau NPSN dihapus) dikunci lagi.
+function aturManualSekolah(bisa) {
+  ["sekolah", "kecamatan", "komda"].forEach(function (id) { el(id).readOnly = !bisa; });
+  el("sekolah").placeholder = bisa ? "Ketik nama sekolah" : "— terisi otomatis dari NPSN —";
+  el("kecamatan").placeholder = bisa ? "Ketik kecamatan" : "— terisi otomatis dari NPSN —";
+  el("komda").placeholder = bisa ? "Ketik Komda" : "— terisi otomatis dari NPSN —";
+}
+
 el("npsn").addEventListener("input", function () {
   var npsn = bersihAngka(this.value);
   this.value = npsn;
@@ -133,6 +144,7 @@ el("npsn").addEventListener("input", function () {
     hint.textContent = "Ketik 8 digit NPSN — nama sekolah dan Komda akan muncul otomatis.";
     hint.className = "hint";
     el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+    aturManualSekolah(false);
     this.classList.remove("galat");
     return;
   }
@@ -140,6 +152,7 @@ el("npsn").addEventListener("input", function () {
     hint.textContent = "NPSN masih " + npsn.length + " digit — lanjutkan sampai 8 digit.";
     hint.className = "hint";
     el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+    aturManualSekolah(false);
     this.classList.remove("galat");
     return;
   }
@@ -148,14 +161,16 @@ el("npsn").addEventListener("input", function () {
     el("sekolah").value = r[1];
     el("kecamatan").value = r[2];
     el("komda").value = r[3];
+    aturManualSekolah(false);
     hint.textContent = "✓ Sekolah ditemukan: " + r[1] + " — Komda " + r[3] + ".";
     hint.className = "hint ok";
     this.classList.remove("galat");
   } else {
     el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
-    hint.textContent = "✗ NPSN tidak ditemukan dalam daftar sekolah Kab. Cilacap. Periksa kembali NPSN-nya.";
-    hint.className = "hint galat";
-    this.classList.add("galat");
+    aturManualSekolah(true);
+    hint.textContent = "⚠ NPSN tidak ditemukan dalam daftar 195 SMP Kab. Cilacap. Silakan isi Nama Sekolah, Kecamatan, dan Komda di bawah ini secara manual.";
+    hint.className = "hint";
+    this.classList.remove("galat");
   }
 });
 
@@ -217,11 +232,13 @@ el("formTKA").addEventListener("submit", function (ev) {
   var nipMat = el("nipMat").value.trim();
 
   if (npsn.length !== 8) return tampilPesan(false, "<b>NPSN belum benar.</b> Isi 8 digit NPSN sekolah.");
-  if (!sekolah) return tampilPesan(false, "<b>NPSN tidak ditemukan.</b> Periksa kembali NPSN-nya — nama sekolah harus muncul otomatis.");
+  if (!sekolah) return tampilPesan(false, "<b>Nama Sekolah</b> wajib diisi — terisi otomatis dari NPSN, atau ketik manual bila NPSN tidak ditemukan.");
+  if (!kecamatan) return tampilPesan(false, "<b>Kecamatan</b> wajib diisi.");
+  if (!komda) return tampilPesan(false, "<b>Komda</b> wajib diisi.");
   if (!guruBindo) return tampilPesan(false, "<b>Nama Guru Bahasa Indonesia</b> wajib diisi.");
-  if (!/^[0-9]{18}$/.test(nipBindo)) return tampilPesan(false, "<b>NIP Guru Bahasa Indonesia</b> harus 18 digit angka.");
+  if (nipBindo && !/^[0-9]{18}$/.test(nipBindo)) return tampilPesan(false, "<b>NIP Guru Bahasa Indonesia</b> harus 18 digit angka bila diisi.");
   if (!guruMat) return tampilPesan(false, "<b>Nama Guru Matematika</b> wajib diisi.");
-  if (!/^[0-9]{18}$/.test(nipMat)) return tampilPesan(false, "<b>NIP Guru Matematika</b> harus 18 digit angka.");
+  if (nipMat && !/^[0-9]{18}$/.test(nipMat)) return tampilPesan(false, "<b>NIP Guru Matematika</b> harus 18 digit angka bila diisi.");
   if (!fileMurid) return tampilPesan(false, "<b>File Data Murid Kelas 9</b> wajib diunggah. Unduh templatenya bila belum punya.");
   if (WEBAPP_URL.indexOf("XXXX") !== -1) return tampilPesan(false, "<b>Form belum terhubung ke server.</b> Panitia masih menyiapkan alamat pengiriman (WEBAPP_URL).");
 
@@ -250,6 +267,7 @@ el("formTKA").addEventListener("submit", function (ev) {
         "Simpan halaman ini sebagai bukti pendaftaran.");
       el("formTKA").reset();
       el("sekolah").value = ""; el("kecamatan").value = ""; el("komda").value = "";
+      aturManualSekolah(false);
       el("npsnHint").textContent = "Ketik 8 digit NPSN — nama sekolah dan Komda akan muncul otomatis.";
       el("npsnHint").className = "hint";
       el("fileInfo").style.display = "none";

@@ -69,9 +69,9 @@ function daftar_(d) {
   if (!/^[0-9]{8}$/.test(npsn)) return { ok: false, pesan: 'NPSN harus 8 digit angka.' };
   if (!sekolah) return { ok: false, pesan: 'Nama sekolah kosong.' };
   if (!guruBindo) return { ok: false, pesan: 'Nama Guru Bahasa Indonesia wajib diisi.' };
-  if (!/^[0-9]{18}$/.test(nipBindo)) return { ok: false, pesan: 'NIP Guru Bahasa Indonesia harus 18 digit angka.' };
+  if (nipBindo && !/^[0-9]{18}$/.test(nipBindo)) return { ok: false, pesan: 'NIP Guru Bahasa Indonesia harus 18 digit angka bila diisi.' };
   if (!guruMat) return { ok: false, pesan: 'Nama Guru Matematika wajib diisi.' };
-  if (!/^[0-9]{18}$/.test(nipMat)) return { ok: false, pesan: 'NIP Guru Matematika harus 18 digit angka.' };
+  if (nipMat && !/^[0-9]{18}$/.test(nipMat)) return { ok: false, pesan: 'NIP Guru Matematika harus 18 digit angka bila diisi.' };
   if (!d.fileData) return { ok: false, pesan: 'File Data Murid Kelas 9 wajib diunggah.' };
 
   var sheet = sheet_();
@@ -86,7 +86,7 @@ function daftar_(d) {
   var tautanFile = simpanFile_(d, npsn, sekolah);
   var waktu = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyy-MM-dd HH:mm:ss');
   sheet.appendRow([waktu, "'" + npsn, sekolah, kecamatan, komda,
-    guruBindo, "'" + nipBindo, guruMat, "'" + nipMat,
+    guruBindo, nipBindo ? "'" + nipBindo : '', guruMat, nipMat ? "'" + nipMat : '',
     String(d.fileNama || ''), tautanFile]);
   return { ok: true, pesan: 'Pendaftaran tersimpan.', tautanFile: tautanFile };
 }
