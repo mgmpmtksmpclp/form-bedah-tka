@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekap Pendaftaran Bedah TKA 2026/2027</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Times New Roman", Times, serif; margin: 0; background: #f1f5f9; color: #1e293b; }
+  header { background: #1d4ed8; color: #fff; text-align: center; padding: 22px 14px 18px; }
+  header h1 { margin: 0; font-size: 24px; letter-spacing: .5px; }
+  header p { margin: 4px 0 0; font-size: 15px; }
+  main { max-width: 960px; margin: 0 auto; padding: 16px 14px 40px; }
+  section { background: #fff; border: 1px solid #dbe2ea; border-radius: 8px; padding: 16px; margin-top: 16px; }
+  h2 { color: #1d4ed8; font-size: 19px; margin: 0 0 12px; border-bottom: 2px solid #dbeafe; padding-bottom: 6px; }
+  .kartu-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .kartu { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; text-align: center; }
+  .kartu .angka { font-size: 30px; font-weight: bold; color: #1d4ed8; }
+  .kartu .label { font-size: 14px; color: #334155; margin-top: 2px; }
+  .baris-komda { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 15px; }
+  .baris-komda .nm { width: 130px; }
+  .baris-komda .batang-luar { flex: 1; background: #e2e8f0; border-radius: 6px; height: 18px; overflow: hidden; }
+  .baris-komda .batang { background: #2563eb; height: 100%; border-radius: 6px; }
+  .baris-komda .jml { width: 90px; text-align: right; }
+  input[type="text"], input[type="password"], select { font-family: inherit; font-size: 16px; padding: 9px 10px; border: 1px solid #94a3b8; border-radius: 6px; width: 100%; max-width: 320px; }
+  select { width: auto; }
+  button { font-family: inherit; font-size: 16px; background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 9px 18px; cursor: pointer; }
+  button:hover { background: #1d4ed8; }
+  .baris-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .bungkus-tabel { overflow-x: auto; margin-top: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { border: 1px solid #cbd5e1; padding: 7px 8px; text-align: left; vertical-align: top; }
+  th { background: #1d4ed8; color: #fff; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .lengkap { color: #15803d; font-weight: bold; }
+  .kurang { color: #b45309; font-weight: bold; }
+  .ket { font-size: 14px; color: #475569; }
+  .galat { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 6px; padding: 12px; }
+  .sukses { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; border-radius: 6px; padding: 12px; }
+  .detail-cek { margin-top: 12px; }
+  .detail-cek p { margin: 5px 0; }
+  .unduh-item { border: 1px solid #dbe2ea; border-radius: 6px; padding: 10px; margin-top: 8px; }
+  .unduh-item .nama-file { font-weight: bold; }
+  .unduh-item a { color: #1d4ed8; }
+  footer { text-align: center; font-size: 13px; color: #64748b; padding: 16px; }
+  .navigasi { background: #fff; border-bottom: 1px solid #dbe2ea; text-align: center; padding: 10px 14px; }
+  .navigasi a { display: inline-block; background: #2563eb; color: #fff; text-decoration: none; font-weight: bold; border-radius: 6px; padding: 9px 18px; font-size: 16px; }
+  .navigasi a:hover { background: #1d4ed8; }
+  @media (max-width: 640px) {
+    .kartu-wrap { grid-template-columns: repeat(2, 1fr); }
+    header h1 { font-size: 20px; }
+    .baris-komda .nm { width: 95px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>REKAP PENDAFTARAN BEDAH TKA 2026/2027</h1>
+  <p>Panitia Bedah TKA Kabupaten Cilacap</p>
+</header>
+<div class="navigasi"><a href="index.html">← Kembali ke Form Pendaftaran</a></div>
+<main>
+  <div id="status-muat">Memuat data pendaftaran…</div>
+  <div id="galat" class="galat" hidden></div>
+
+  <div id="isi" hidden>
+    <section>
+      <h2>Ringkasan</h2>
+      <div class="kartu-wrap" id="ringkasan"></div>
+      <p class="ket" id="terakhir"></p>
+    </section>
+
+    <section>
+      <h2>Per Komda</h2>
+      <div id="komda"></div>
+    </section>
+
+    <section>
+      <h2>Cek Status Pendaftaran</h2>
+      <p class="ket">Masukkan NPSN sekolah untuk melihat status pendaftarannya.</p>
+      <div class="baris-form">
+        <input type="text" id="input-npsn" placeholder="Contoh: 20300511" inputmode="numeric">
+        <button type="button" onclick="cekNPSN()">Cek</button>
+      </div>
+      <div id="hasil-cek"></div>
+    </section>
+
+    <section>
+      <h2>Daftar Sekolah Terdaftar</h2>
+      <div class="baris-form">
+        <input type="text" id="input-cari" placeholder="Cari sekolah, NPSN, kecamatan, Komda, atau guru…" oninput="renderTabel()">
+        <select id="filter-komda" onchange="renderTabel()">
+          <option value="">Semua Komda</option>
+        </select>
+      </div>
+      <div class="bungkus-tabel">
+        <table>
+          <thead>
+            <tr><th>Sekolah</th><th>Kecamatan / Komda</th><th>Guru Bahasa Indonesia</th><th>Guru Matematika</th><th>File Data Murid</th><th>Status</th></tr>
+          </thead>
+          <tbody id="badan-tabel"></tbody>
+        </table>
+      </div>
+      <p class="ket" id="jml-tampil"></p>
+    </section>
+
+    <section>
+      <h2>Unduh Data Peserta per Mata Pelajaran</h2>
+      <p class="ket">Bagian ini hanya untuk yang diberi akses. Masukkan kode akses mata pelajaran untuk melihat dan mengunduh file data peserta mata pelajaran tersebut. Kode akses hanya penghalang ringan — berkas di Drive tetap mengikuti pengaturan berbagi di Drive.</p>
+      <div class="baris-form">
+        <input type="password" id="input-kode" placeholder="Kode akses mata pelajaran" autocomplete="off">
+        <button type="button" onclick="bukaKode()">Buka</button>
+      </div>
+      <p id="kode-galat" class="galat" hidden></p>
+      <div id="daftar-unduh"></div>
+    </section>
+  </div>
+</main>
+<footer>Panitia Bedah TKA Kabupaten Cilacap — Data diambil langsung dari Sheet Pendaftaran Bedah TKA 2026/2027.</footer>
+
+<script>
+/* ================= PENGATURAN — UBAH DI SINI =================
+   KODE AKSES: ganti kedua kode di bawah ini sebelum halaman dibagikan.
+   Kode Matematika hanya membuka file Matematika, kode Bahasa Indonesia
+   hanya membuka file Bahasa Indonesia. Kode ini terlihat di sumber
+   halaman, jadi ini penghalang ringan saja; keamanan berkas yang
+   sebenarnya ada pada pengaturan berbagi file di Google Drive. */
+var CONFIG = {
+  SHEET_ID: "1YorUWpfJYly643gyg4X2BNHfThFNc4NweahHok1-Roo",
+  SHEET_TAB: "Pendaftaran",
+  TOTAL_SEKOLAH: 195,
+  KODE: {
+    "Matematika": "MATCLP",
+    "Bahasa Indonesia": "BINDCLP"
+  }
+};
+/* =============================================================== */
+
+var SEKOLAH = {};   /* npsn -> {npsn, nama, kecamatan, komda, guru:{mapel:[nama]}, file:{mapel:[{nama,tautan}]}, waktu} */
+var JML_GURU = {};   /* mapel -> jumlah baris guru (satu sekolah bisa mendaftarkan >1 guru per mapel) */
+var TERBUKA = {};   /* mapel -> true bila kodenya sudah dimasukkan */
+
+function sel(c) {
+  if (!c) return "";
+  if (c.f !== undefined && c.f !== null && c.f !== "") return String(c.f);
+  if (c.v !== undefined && c.v !== null) return String(c.v);
+  return "";
+}
+
+function muatData() {
+  /* JSONP gviz: endpoint ini tidak mengirim header CORS, jadi pakai pola ini. */
+  window.google = { visualization: { Query: { setResponse: tangani } } };
+  var s = document.createElement("script");
+  s.src = "https://docs.google.com/spreadsheets/d/" + CONFIG.SHEET_ID +
+          "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(CONFIG.SHEET_TAB);
+  s.onerror = function () { tampilGalat("Data tidak bisa dimuat. Periksa koneksi, lalu tekan Muat Ulang."); };
+  document.head.appendChild(s);
+}
+
+function tampilGalat(pesan) {
+  document.getElementById("status-muat").hidden = true;
+  var g = document.getElementById("galat");
+  g.hidden = false;
+  g.innerHTML = "<b>" + pesan + "</b><br><br>" +
+    "Penyebab yang paling sering: Sheet belum dibagikan \"Siapa saja yang memiliki tautan dapat melihat\". " +
+    "Aktifkan berbagi tautan pada Sheet Pendaftaran Bedah TKA, lalu tekan tombol di bawah ini.<br><br>" +
+    "<button type=\"button\" onclick=\"location.reload()\">Muat Ulang</button>";
+}
+
+function tangani(resp) {
+  if (!resp || resp.status === "error") {
+    tampilGalat("Data tidak bisa dimuat.");
+    return;
+  }
+  var rows = resp.table.rows.map(function (r) {
+    var arr = [];
+    for (var i = 0; i < 10; i++) arr.push(sel(r.c ? r.c[i] : null));
+    return arr;
+  });
+  olah(rows.slice(1));
+}
+
+function olah(rows) {
+  SEKOLAH = {};
+  JML_GURU = {};
+  rows.forEach(function (row) {
+    var npsn = (row[1] || "").trim();
+    if (!npsn) return;
+    var s = SEKOLAH[npsn];
+    if (!s) {
+      s = SEKOLAH[npsn] = { npsn: npsn, nama: row[2] || "", kecamatan: row[3] || "",
+        komda: row[4] || "", guru: {}, file: {}, waktu: row[0] || "" };
+    }
+    var mapel = row[5] || "";
+    if (mapel) {
+      JML_GURU[mapel] = (JML_GURU[mapel] || 0) + 1;
+      if (!s.guru[mapel]) s.guru[mapel] = [];
+      var nm = (row[6] || "").trim();
+      if (nm && s.guru[mapel].indexOf(nm) === -1) s.guru[mapel].push(nm);
+      if (row[9]) {
+        if (!s.file[mapel]) s.file[mapel] = [];
+        var ada = s.file[mapel].some(function (f) { return f.tautan === row[9]; });
+        if (!ada) s.file[mapel].push({ nama: row[8] || "File data murid", tautan: row[9] });
+      }
+    }
+    if (row[0] && (!s.waktu || row[0] < s.waktu)) s.waktu = row[0];
+  });
+  document.getElementById("status-muat").hidden = true;
+  document.getElementById("isi").hidden = false;
+  renderRingkasan();
+  renderKomda();
+  isiFilterKomda();
+  renderTabel();
+}
+
+function isiFilterKomda() {
+  var hitung = {};
+  daftarSekolah().forEach(function (s) {
+    var k = s.komda || "(tanpa Komda)";
+    hitung[k] = (hitung[k] || 0) + 1;
+  });
+  var selEl = document.getElementById("filter-komda");
+  var pilih = selEl.value;
+  selEl.innerHTML = "<option value=\"\">Semua Komda</option>" + Object.keys(hitung).sort().map(function (k) {
+    return "<option value=\"" + esc(k) + "\">" + esc(k) + " (" + hitung[k] + " sekolah)</option>";
+  }).join("");
+  if (pilih) selEl.value = pilih;
+}
+
+function pilihKomda(k) {
+  document.getElementById("filter-komda").value = k;
+  renderTabel();
+  document.getElementById("badan-tabel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function daftarSekolah() {
+  return Object.keys(SEKOLAH).map(function (k) { return SEKOLAH[k]; })
+    .sort(function (a, b) { return a.nama.localeCompare(b.nama); });
+}
+
+function renderRingkasan() {
+  var list = daftarSekolah();
+  var guruBI = JML_GURU["Bahasa Indonesia"] || 0;
+  var guruMTK = JML_GURU["Matematika"] || 0;
+  var lengkap = 0;
+  list.forEach(function (s) {
+    if ((s.guru["Bahasa Indonesia"] || []).length && (s.guru["Matematika"] || []).length) lengkap++;
+  });
+  var kartu = [
+    [list.length + " / " + CONFIG.TOTAL_SEKOLAH, "Sekolah terdaftar"],
+    [guruBI + guruMTK, "Guru terdaftar"],
+    [guruBI, "Guru Bahasa Indonesia"],
+    [guruMTK, "Guru Matematika"],
+    [lengkap, "Sekolah lengkap 2 mapel"],
+    [list.length - lengkap, "Sekolah baru 1 mapel"]
+  ];
+  document.getElementById("ringkasan").innerHTML = kartu.map(function (k) {
+    return "<div class=\"kartu\"><div class=\"angka\">" + k[0] + "</div><div class=\"label\">" + k[1] + "</div></div>";
+  }).join("");
+  var tgl = new Date();
+  document.getElementById("terakhir").textContent =
+    "Terakhir diperbarui: " + tgl.toLocaleString("id-ID");
+}
+
+function renderKomda() {
+  var hitung = {};
+  daftarSekolah().forEach(function (s) {
+    var k = s.komda || "(tanpa Komda)";
+    hitung[k] = (hitung[k] || 0) + 1;
+  });
+  var entri = Object.keys(hitung).map(function (k) { return [k, hitung[k]]; })
+    .sort(function (a, b) { return b[1] - a[1]; });
+  var maks = entri.length ? entri[0][1] : 1;
+  document.getElementById("komda").innerHTML = entri.map(function (e) {
+    var persen = Math.round(e[1] / maks * 100);
+    return "<div class=\"baris-komda\" onclick=\"pilihKomda('" + e[0].replace(/'/g, "\\'") + "')\" style=\"cursor:pointer\" title=\"Klik untuk memfilter tabel\"><span class=\"nm\">" + e[0] + "</span>" +
+      "<span class=\"batang-luar\"><span class=\"batang\" style=\"display:block;width:" + persen + "%\"></span></span>" +
+      "<span class=\"jml\">" + e[1] + " sekolah</span></div>";
+  }).join("");
+}
+
+function esc(t) {
+  return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderTabel() {
+  var q = (document.getElementById("input-cari").value || "").toLowerCase();
+  var komda = document.getElementById("filter-komda").value;
+  var tampil = daftarSekolah().filter(function (s) {
+    if (komda && (s.komda || "(tanpa Komda)") !== komda) return false;
+    if (!q) return true;
+    var hay = [s.npsn, s.nama, s.kecamatan, s.komda,
+      (s.guru["Bahasa Indonesia"] || []).join(" "),
+      (s.guru["Matematika"] || []).join(" ")].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  });
+  document.getElementById("badan-tabel").innerHTML = tampil.map(function (s) {
+    var jmlFile = ((s.file["Bahasa Indonesia"] || []).length + (s.file["Matematika"] || []).length);
+    var lengkap = (s.guru["Bahasa Indonesia"] || []).length && (s.guru["Matematika"] || []).length;
+    return "<tr><td><b>" + esc(s.nama) + "</b><br><span class=\"ket\">NPSN " + esc(s.npsn) + "</span></td>" +
+      "<td>" + esc(s.kecamatan) + "<br>" + esc(s.komda) + "</td>" +
+      "<td>" + ((s.guru["Bahasa Indonesia"] || []).join("<br>") || "—") + "</td>" +
+      "<td>" + ((s.guru["Matematika"] || []).join("<br>") || "—") + "</td>" +
+      "<td>" + (jmlFile ? "✓ Sudah" : "✗ Belum") + "</td>" +
+      "<td class=\"" + (lengkap ? "lengkap" : "kurang") + "\">" +
+      (lengkap ? "Lengkap" : "Kurang 1 mapel") + "</td></tr>";
+  }).join("") || "<tr><td colspan=\"6\">Tidak ada sekolah yang cocok.</td></tr>";
+  document.getElementById("jml-tampil").textContent =
+    "Menampilkan " + tampil.length + " dari " + daftarSekolah().length + " sekolah.";
+}
+
+function cekNPSN() {
+  var npsn = (document.getElementById("input-npsn").value || "").trim();
+  var box = document.getElementById("hasil-cek");
+  if (!npsn) { box.innerHTML = ""; return; }
+  var s = SEKOLAH[npsn];
+  if (!s) {
+    box.innerHTML = "<div class=\"galat\" style=\"margin-top:12px\">NPSN <b>" + esc(npsn) + "</b> belum terdaftar.</div>";
+    return;
+  }
+  function barisMapel(mapel) {
+    var g = (s.guru[mapel] || []).join("; ");
+    var f = s.file[mapel] || [];
+    return "<p><b>" + mapel + ":</b> " + (g ? esc(g) : "— belum ada guru") +
+      " — File data murid: " + (f.length ? "✓ Sudah diunggah (" + f.length + " file)" : "✗ Belum") + "</p>";
+  }
+  box.innerHTML = "<div class=\"sukses detail-cek\" style=\"margin-top:12px\">" +
+    "<p><b>" + esc(s.nama) + "</b> (NPSN " + esc(s.npsn) + ")</p>" +
+    "<p>" + esc(s.kecamatan) + " — Komda " + esc(s.komda) + "</p>" +
+    barisMapel("Bahasa Indonesia") + barisMapel("Matematika") +
+    "<p class=\"ket\">Waktu daftar pertama: " + esc(s.waktu || "—") + "</p></div>";
+}
+
+function idFile(tautan) {
+  var m = String(tautan || "").match(/\/d\/([^\/\?]+)/);
+  return m ? m[1] : "";
+}
+
+function bukaKode() {
+  var kode = (document.getElementById("input-kode").value || "").trim();
+  var galat = document.getElementById("kode-galat");
+  var mapel = null;
+  Object.keys(CONFIG.KODE).forEach(function (m) {
+    if (kode && kode === CONFIG.KODE[m]) mapel = m;
+  });
+  if (!mapel) {
+    galat.hidden = false;
+    galat.textContent = "Kode akses salah. Periksa lagi kode untuk mata pelajaran yang dimaksud.";
+    return;
+  }
+  galat.hidden = true;
+  TERBUKA[mapel] = true;
+  document.getElementById("input-kode").value = "";
+  renderUnduh();
+}
+
+function renderUnduh() {
+  var box = document.getElementById("daftar-unduh");
+  var daftar = Object.keys(TERBUKA).filter(function (m) { return TERBUKA[m]; });
+  if (!daftar.length) { box.innerHTML = ""; return; }
+  var html = "";
+  daftar.forEach(function (mapel) {
+    var items = [];
+    daftarSekolah().forEach(function (s) {
+      (s.file[mapel] || []).forEach(function (f) { items.push({ s: s, f: f }); });
+    });
+    html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">" + mapel + " — " + items.length + " file</h3>";
+    if (!items.length) {
+      html += "<p class=\"ket\">Belum ada file data peserta untuk mata pelajaran ini.</p>";
+    }
+    items.forEach(function (it) {
+      var id = idFile(it.f.tautan);
+      var unduh = id ? "https://drive.google.com/uc?export=download&id=" + id : it.f.tautan;
+      html += "<div class=\"unduh-item\"><div><b>" + esc(it.s.nama) + "</b> — " + esc((it.s.guru[mapel] || []).join("; ")) + "</div>" +
+        "<div class=\"nama-file\">" + esc(it.f.nama) + "</div>" +
+        "<div><a href=\"" + unduh + "\" target=\"_blank\" rel=\"noopener\">Unduh</a> &nbsp;·&nbsp; " +
+        "<a href=\"" + it.f.tautan + "\" target=\"_blank\" rel=\"noopener\">Lihat di Drive</a></div></div>";
+    });
+  });
+  box.innerHTML = html;
+}
+
+muatData();
+</script>
+</body>
+</html>
