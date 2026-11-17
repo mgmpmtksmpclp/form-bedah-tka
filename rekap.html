@@ -177,7 +177,11 @@ function tangani(resp) {
     for (var i = 0; i < 10; i++) arr.push(sel(r.c ? r.c[i] : null));
     return arr;
   });
-  olah(rows.slice(1));
+  /* gviz sudah memisahkan baris judul ke cols[].label, jadi baris pertama
+     yang dikirim biasanya langsung data (bukan judul). Lewati baris pertama
+     hanya bila isinya memang judul ("NPSN") atau NPSN-nya kosong. */
+  if (rows.length && ((rows[0][1] || "").trim() === "" || (rows[0][1] || "").trim() === "NPSN")) rows = rows.slice(1);
+  olah(rows);
 }
 
 function olah(rows) {
