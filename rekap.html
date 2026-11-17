@@ -106,7 +106,7 @@
 
     <section>
       <h2>Unduh Data Peserta per Mata Pelajaran</h2>
-      <p class="ket">Bagian ini hanya untuk yang diberi akses. Masukkan kode akses mata pelajaran untuk melihat dan mengunduh file data peserta mata pelajaran tersebut. Kode akses hanya penghalang ringan — berkas di Drive tetap mengikuti pengaturan berbagi di Drive.</p>
+      <p class="ket">Bagian ini hanya untuk yang diberi akses. Masukkan kode akses mata pelajaran untuk melihat daftar peserta mata pelajaran tersebut — nama, sekolah, dan NIP (bila ada) — serta mengunduh file data muridnya. Kode akses hanya penghalang ringan — berkas di Drive tetap mengikuti pengaturan berbagi di Drive.</p>
       <div class="baris-form">
         <input type="password" id="input-kode" placeholder="Kode akses mata pelajaran" autocomplete="off">
         <button type="button" onclick="bukaKode()">Buka</button>
@@ -136,7 +136,7 @@ var CONFIG = {
 };
 /* =============================================================== */
 
-var SEKOLAH = {};   /* npsn -> {npsn, nama, kecamatan, komda, guru:{mapel:[nama]}, file:{mapel:[{nama,tautan}]}, waktu} */
+var SEKOLAH = {};   /* npsn -> {npsn, nama, kecamatan, komda, guru:{mapel:[nama]}, nip:{mapel:{nama:nip}}, file:{mapel:[{nama,tautan}]}, waktu} */
 var JML_GURU = {};   /* mapel -> jumlah baris guru (satu sekolah bisa mendaftarkan >1 guru per mapel) */
 var TERBUKA = {};   /* mapel -> true bila kodenya sudah dimasukkan */
 
@@ -189,7 +189,7 @@ function olah(rows) {
     var s = SEKOLAH[npsn];
     if (!s) {
       s = SEKOLAH[npsn] = { npsn: npsn, nama: row[2] || "", kecamatan: row[3] || "",
-        komda: row[4] || "", guru: {}, file: {}, waktu: row[0] || "" };
+        komda: row[4] || "", guru: {}, nip: {}, file: {}, waktu: row[0] || "" };
     }
     var mapel = row[5] || "";
     if (mapel) {
@@ -197,6 +197,11 @@ function olah(rows) {
       if (!s.guru[mapel]) s.guru[mapel] = [];
       var nm = (row[6] || "").trim();
       if (nm && s.guru[mapel].indexOf(nm) === -1) s.guru[mapel].push(nm);
+      if (nm) {
+        if (!s.nip[mapel]) s.nip[mapel] = {};
+        var nip = (row[7] || "").trim();
+        if (nip && !s.nip[mapel][nm]) s.nip[mapel][nm] = nip;
+      }
       if (row[9]) {
         if (!s.file[mapel]) s.file[mapel] = [];
         var ada = s.file[mapel].some(function (f) { return f.tautan === row[9]; });
@@ -360,11 +365,26 @@ function renderUnduh() {
   if (!daftar.length) { box.innerHTML = ""; return; }
   var html = "";
   daftar.forEach(function (mapel) {
+    var peserta = [];
+    daftarSekolah().forEach(function (s) {
+      (s.guru[mapel] || []).forEach(function (nm) {
+        peserta.push({ nama: nm, sekolah: s.nama, nip: ((s.nip && s.nip[mapel]) || {})[nm] || "" });
+      });
+    });
+    html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">" + mapel + " — " + peserta.length + " peserta</h3>";
+    if (!peserta.length) {
+      html += "<p class=\"ket\">Belum ada peserta untuk mata pelajaran ini.</p>";
+    } else {
+      html += "<div class=\"bungkus-tabel\"><table><thead><tr><th>Nama Peserta</th><th>Sekolah</th><th>NIP</th></tr></thead><tbody>" +
+        peserta.map(function (p) {
+          return "<tr><td>" + esc(p.nama) + "</td><td>" + esc(p.sekolah) + "</td><td>" + esc(p.nip || "—") + "</td></tr>";
+        }).join("") + "</tbody></table></div>";
+    }
     var items = [];
     daftarSekolah().forEach(function (s) {
       (s.file[mapel] || []).forEach(function (f) { items.push({ s: s, f: f }); });
     });
-    html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">" + mapel + " — " + items.length + " file</h3>";
+    html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">File data murid — " + items.length + " file</h3>";
     if (!items.length) {
       html += "<p class=\"ket\">Belum ada file data peserta untuk mata pelajaran ini.</p>";
     }
