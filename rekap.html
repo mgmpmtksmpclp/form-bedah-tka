@@ -39,9 +39,6 @@
   .sukses { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; border-radius: 6px; padding: 12px; }
   .detail-cek { margin-top: 12px; }
   .detail-cek p { margin: 5px 0; }
-  .unduh-item { border: 1px solid #dbe2ea; border-radius: 6px; padding: 10px; margin-top: 8px; }
-  .unduh-item .nama-file { font-weight: bold; }
-  .unduh-item a { color: #1d4ed8; }
   footer { text-align: center; font-size: 13px; color: #64748b; padding: 16px; }
   .navigasi { background: #fff; border-bottom: 1px solid #dbe2ea; text-align: center; padding: 10px 14px; }
   .navigasi a { display: inline-block; background: #2563eb; color: #fff; text-decoration: none; font-weight: bold; border-radius: 6px; padding: 9px 18px; font-size: 16px; }
@@ -106,7 +103,6 @@
 
     <section>
       <h2>Unduh Data Peserta per Mata Pelajaran</h2>
-      <p class="ket">Bagian ini hanya untuk yang diberi akses. Masukkan kode akses mata pelajaran untuk melihat daftar peserta mata pelajaran tersebut — nama, sekolah, dan NIP (bila ada) — serta mengunduh file data muridnya. Kode akses hanya penghalang ringan — berkas di Drive tetap mengikuti pengaturan berbagi di Drive.</p>
       <div class="baris-form">
         <input type="password" id="input-kode" placeholder="Kode akses mata pelajaran" autocomplete="off">
         <button type="button" onclick="bukaKode()">Buka</button>
@@ -139,6 +135,7 @@ var CONFIG = {
 var SEKOLAH = {};   /* npsn -> {npsn, nama, kecamatan, komda, guru:{mapel:[nama]}, nip:{mapel:{nama:nip}}, file:{mapel:[{nama,tautan}]}, waktu} */
 var JML_GURU = {};   /* mapel -> jumlah baris guru (satu sekolah bisa mendaftarkan >1 guru per mapel) */
 var TERBUKA = {};   /* mapel -> true bila kodenya sudah dimasukkan */
+var PESERTA_TAMPIL = {};   /* mapel -> [{nama, sekolah, nip}] untuk unduhan CSV */
 
 function sel(c) {
   if (!c) return "";
@@ -340,10 +337,6 @@ function cekNPSN() {
     "<p class=\"ket\">Waktu daftar pertama: " + esc(s.waktu || "—") + "</p></div>";
 }
 
-function idFile(tautan) {
-  var m = String(tautan || "").match(/\/d\/([^\/\?]+)/);
-  return m ? m[1] : "";
-}
 
 function bukaKode() {
   var kode = (document.getElementById("input-kode").value || "").trim();
@@ -375,6 +368,7 @@ function renderUnduh() {
         peserta.push({ nama: nm, sekolah: s.nama, nip: ((s.nip && s.nip[mapel]) || {})[nm] || "" });
       });
     });
+    PESERTA_TAMPIL[mapel] = peserta;
     html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">" + mapel + " — " + peserta.length + " peserta</h3>";
     if (!peserta.length) {
       html += "<p class=\"ket\">Belum ada peserta untuk mata pelajaran ini.</p>";
@@ -382,26 +376,36 @@ function renderUnduh() {
       html += "<div class=\"bungkus-tabel\"><table><thead><tr><th>Nama Peserta</th><th>Sekolah</th><th>NIP</th></tr></thead><tbody>" +
         peserta.map(function (p) {
           return "<tr><td>" + esc(p.nama) + "</td><td>" + esc(p.sekolah) + "</td><td>" + esc(p.nip || "—") + "</td></tr>";
-        }).join("") + "</tbody></table></div>";
+        }).join("") + "</tbody></table></div>" +
+        "<p style=\"margin:10px 0 0\"><button type=\"button\" onclick=\"unduhCSV('" + mapel + "')\">\u2b07 Unduh CSV Peserta " + mapel + "</button></p>";
     }
-    var items = [];
-    daftarSekolah().forEach(function (s) {
-      (s.file[mapel] || []).forEach(function (f) { items.push({ s: s, f: f }); });
-    });
-    html += "<h3 style=\"color:#1d4ed8;margin:16px 0 4px\">File data murid — " + items.length + " file</h3>";
-    if (!items.length) {
-      html += "<p class=\"ket\">Belum ada file data peserta untuk mata pelajaran ini.</p>";
-    }
-    items.forEach(function (it) {
-      var id = idFile(it.f.tautan);
-      var unduh = id ? "https://drive.google.com/uc?export=download&id=" + id : it.f.tautan;
-      html += "<div class=\"unduh-item\"><div><b>" + esc(it.s.nama) + "</b> — " + esc((it.s.guru[mapel] || []).join("; ")) + "</div>" +
-        "<div class=\"nama-file\">" + esc(it.f.nama) + "</div>" +
-        "<div><a href=\"" + unduh + "\" target=\"_blank\" rel=\"noopener\">Unduh</a> &nbsp;·&nbsp; " +
-        "<a href=\"" + it.f.tautan + "\" target=\"_blank\" rel=\"noopener\">Lihat di Drive</a></div></div>";
-    });
   });
   box.innerHTML = html;
+}
+
+function buatCSV(mapel) {
+  /* Pemisah titik koma supaya langsung terpisah kolomnya di Excel locale Indonesia. */
+  function selCSV(v) {
+    v = String(v || "");
+    if (v.indexOf(";") !== -1 || v.indexOf('"') !== -1 || v.indexOf("\n") !== -1) return '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+  var baris = ["Nama Peserta;Sekolah;NIP"];
+  (PESERTA_TAMPIL[mapel] || []).forEach(function (p) {
+    baris.push([p.nama, p.sekolah, p.nip].map(selCSV).join(";"));
+  });
+  return "\uFEFF" + baris.join("\r\n");
+}
+
+function unduhCSV(mapel) {
+  var blob = new Blob([buatCSV(mapel)], { type: "text/csv;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Peserta-Bedah-TKA-" + mapel.replace(/ /g, "-") + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
 }
 
 muatData();
